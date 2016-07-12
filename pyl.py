@@ -62,16 +62,32 @@ def llamada(masas,diccionario):
 
 def dibujar(listaPlaneta):
     dibujos = Toplevel()
+    dibujos.minsize(1000,700)
     listPlan =  listaPlaneta.split()
-    d = Canvas(dibujos)
-    k=0
+    xscrollbar = Scrollbar(dibujos, orient=HORIZONTAL)
+    d = Canvas(dibujos,width=1000,height=700,xscrollcommand=xscrollbar.set)
+    k=50
+    xscrollbar.config(command=d.xview)
+    def _create_circle(dibujos, x, y, r, **kwargs):
+        return d.create_oval(x - r, y - r, x + r, y + r, **kwargs)
 
+    Canvas.create_circle = _create_circle
+    posab = 0
     for var in prolog.query("planeta(Planeta,Clasificacion,Masa,Posicion)"):
         for plan in listPlan:
             if var["Planeta"] == plan:
-                oval = d.create_oval(var["Posicion"]*k,var["Posicion"]+10,var["Masa"]*10,var["Masa"]+10,fill = "blue")
+                if var["Planeta"] == "jupiter":
+                    var["Masa"] = 21
+                elif var["Planeta"] == "saturno":
+                    var["Masa"] = 19
+
+                posab = posab + var["Posicion"]*k
+                y =180
+                d.create_circle(posab, 225,var["Masa"]*10, fill="blue", outline="#DDD", width=3)
+                posab = posab + var["Masa"]*7
+                #oval = d.create_oval(var["Posicion"]*k,var["Posicion"]+10,var["Masa"]*10,var["Masa"]+10,fill = "blue")
                 #labels = Label(dibujos, text=var["Planeta"])
-                k+5
+                k+100
     d.pack()
     #labels.pack(side = TOP)
 
